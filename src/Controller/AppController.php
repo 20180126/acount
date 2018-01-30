@@ -39,16 +39,55 @@ class AppController extends Controller
      */
     public function initialize()
     {
-        parent::initialize();
-
-        $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
-
+        // loadComponentしたら$this->???で利用できる
+        $this->loadComponent('RequestHandler'); // Request
+        $this->loadComponent('Flash'); // HTMLコンポーネント
+        // 認証コンポーネント、入力された値がデータベースのカラムと一致する場合
+        // Sessionに値をidとusername(Auth独自定義、この定義にあわせてテーブル設計を行う)をつける
+        // Auth->user()で簡単にログイン状態を確認できる
+        // ログイン状態の確認,Validererやハッシュ化などを簡単に行える
+        $this->loadComponent('Auth', [
+            'authenticate' => [
+                // HTMLから飛んできたname
+                'Form' => [
+                    'fields' => [
+                    // 左に入れる定義名、左にHTMLのname名
+                    'username' => 'email',
+                    'password' => 'password'
+                    ]
+                ]
+            ],
+            // 認証関数
+            'loginAction' => [
+                'controller' => 'Users',
+                'action' => 'login'
+            ],
+            // 認証後のリダイレクト先
+            'loginRedirect' => [
+                'controller' => 'Users',
+                'action' => 'index'
+            ],
+            // ログアウトが呼ばれた時のリダイレクト先
+            'logoutRedirect' => [
+                'controller' => 'Pages',
+                'action' => 'display',
+                'home'
+            ]
+        ]);
+        // Authでログインを処理する画面を許可しないと認証が通らない
+        // 認証前、認証に関わる部分と認証後のコンテンツの区別をつけよう
+        // またログインが完了した場合には、すべてのコンテンツの出入りできる
+        $this->Auth->allow('add');
+        $this->Auth->allow('index');
+        $this->Auth->allow('display');
+        $this->Auth->allow('view');
+        // 使用するレイアウトを選択
+        
+        // $this->viewBuilder()->layout('index');
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
     }
 }
+
