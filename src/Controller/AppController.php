@@ -65,7 +65,7 @@ class AppController extends Controller
             // 認証後のリダイレクト先
             'loginRedirect' => [
                 'controller' => 'Users',
-                'action' => 'index'
+                'action' => 'form'
             ],
             // ログアウトが呼ばれた時のリダイレクト先
             'logoutRedirect' => [
@@ -77,10 +77,6 @@ class AppController extends Controller
         // Authでログインを処理する画面を許可しないと認証が通らない
         // 認証前、認証に関わる部分と認証後のコンテンツの区別をつけよう
         // またログインが完了した場合には、すべてのコンテンツの出入りできる
-        $this->Auth->allow('add');
-        $this->Auth->allow('index');
-        $this->Auth->allow('display');
-        $this->Auth->allow('view');
         // 使用するレイアウトを選択
         
         // $this->viewBuilder()->layout('index');

@@ -12,7 +12,7 @@ class CreatePosts extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('posts', ['id' => false]);
+        $table = $this->table('posts');
         $table->addColumn('user_id', 'integer', [
             'default' => null,
             'limit' => 255,
