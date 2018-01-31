@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Users Controller
@@ -23,11 +24,31 @@ class UsersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
-    {
-        $users = $this->paginate($this->Users);
+    public function index(...$path){
 
-        $this->set(compact('users'));
+        empty($this->request->getQuery('0')) ?
+            $path = null :
+            $path = (int) $this->request->getQuery('0');
+
+        switch($this->request->getQuery('1')){
+            case 'false':
+                $this->Flash->error(__('ユーザーを確認できませんでした'));
+                break;
+            case 'success':
+                $this->Flash->success(__('ユーザが見つかりました！'));
+                break;
+            default:
+                break;
+        }
+
+        $user = TableRegistry::get("users")
+                ->find()
+                ->where(['user_id' => $path])
+                ->first();
+
+        $login_user = $this->Auth->user();
+
+        $this->set(compact('user', 'login_user'));
     }
 
     /**
@@ -44,6 +65,16 @@ class UsersController extends AppController
         ]);
 
         $this->set('user', $user);
+    }
+
+    public function viewContent($id = null)
+    {
+        $user = $this->Users->get($id,[
+            'contain'=> []
+        ]);
+
+        $posts = TableRegistry::get("posts")->find()->where(['user_id' => $user['user_id']]);
+        $this->set(compact('posts'));
     }
 
     /**
@@ -113,9 +144,12 @@ class UsersController extends AppController
     }
 
     public function form(){
+
         $user = $this->Auth->user();
 
-        $this->set(compact('user'));
+        $posts = $this->paginate(TableRegistry::get("posts")->find()->where(['user_id' => $user['user_id']]));
+
+        $this->set(compact('user','posts'));
     }
 
     public function login()

@@ -78,8 +78,11 @@ class AppController extends Controller
         // 認証前、認証に関わる部分と認証後のコンテンツの区別をつけよう
         // またログインが完了した場合には、すべてのコンテンツの出入りできる
         // 使用するレイアウトを選択
+
+        $this->Auth->allow('index');
+        $this->Auth->allow('display');
         
-        // $this->viewBuilder()->layout('index');
+        $this->viewBuilder()->layout('index');
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
